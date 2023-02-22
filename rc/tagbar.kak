@@ -39,8 +39,8 @@ str tagbar_display_anon 'true'
 
 declare-option -docstring "Choose how to split current pane to display tagbar panel.
   Possible values: vertical, horizontal
-  Default value: horizontal" \
-str tagbar_split "horizontal"
+  Default value: vertical" \
+str tagbar_split "vertical"
 
 declare-option -docstring "Choose where to display tagbar panel.
   Possible values: left, right
@@ -139,6 +139,9 @@ define-command -hidden tagbar-display %{ nop %sh{
         [ -n "${kak_opt_tagbar_size%%*%}" ] && measure="-l" || measure="-p"
         tmux split-window ${split} ${side} ${measure} ${kak_opt_tagbar_size%%%*} kak -c ${kak_session} -e "${tagbar_cmd}"
 
+    elif [ -n "$ZELLIJ" ]; then
+        [ "${kak_opt_tagbar_split}" = "vertical" ] && split="right" || split="down"
+    	zellij run --close-on-exit --direction ${split} -- kak -c ${kak_session} -e "${tagbar_cmd}"
     elif [ "$TERM" = "xterm-kitty" ]; then
         match=""
         if [ -n "$kak_client_env_KITTY_WINDOW_ID" ]; then
